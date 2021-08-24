@@ -2,6 +2,13 @@
 
 Curso de introducción al análisis de datos con R para estudiantes de pregrado de la Escuela de Ciencias del Mar de la PUCV.
 
+**PROFESORES:**  
+
+[**JOSÉ ANDRÉS GALLARDO MATUS**](https://github.com/DrJoseGallardo)  
+Doctor en Ciencias por la Universidad de Chile, Chile.
+Biólogo Marino por la Universidad Católica de la Santísima Concepción, Chile.
+Profesor adjunto de la Pontificia Universidad Católica de Valparaíso, Chile.
+
 ## UNIDADES DE APRENDIZAJE
 
 ### UNIDAD 1. INVESTIGACIÓN REPRODUCIBLE Y ANÁLISIS EXPLORATORIO DE DATOS

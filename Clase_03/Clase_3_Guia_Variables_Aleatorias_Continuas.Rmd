@@ -1,0 +1,189 @@
+---
+title: "Clase 3 Guía Variables Aleatorias Continuas"
+author: Dr. José Gallardo Matus. | Pontificia Universidad Católica de Valparaíso | <jose.gallardo@pucv.cl> 
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    code_folding: hide
+subtitle: 'OCE 386 - Introducción al análisis de datos con R'
+---
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Librería de "stats" y "graphics" están instaladas en la base de R
+library(stats)
+library(graphics)
+
+# Librería Pander desde "knit" Permite crear tablas con leyendas en Rmarkdown
+library(pander)
+
+```
+
+## **Funciones clave para analizar el comportamiento de una variable**
+
+¿Cómo puedo observar el comportamiento de una variable?
+
+1.- Tabla de distribución de frecuencia
+**table()**
+2.- Histograma
+**hist()**
+3.- Gráfica x-y de puntos"p", lineas "l" o ambas "b".
+**plot()**
+4.- Gráfica de cajas y bigotes
+**boxplot()**
+5.- Mediante una función de distribución acumulada empírica
+**ecdf()**
+6.- Mediante una función de densidad empírica
+**density()**
+
+¿Cómo puedo predecir el comportamiento de una variable con distribución normal?
+
+1.- Funcion de densidad: Probabilidad de que una variable aleatoría Y tome un valor numérico.
+**dnorm()**
+
+2.- Distribución acumulada: Probabilidad de que Y tome un valor por debajo de y. **pnorm()**
+
+3.- Quantiles: Evaluar los cuantiles (puntos tomados a intervalos regulares de la función de distribución de una variable aleatoria).
+**qnorm()**
+
+## **Funciones clave para simular variables aleatorias**
+
+1.- Establece una semilla o punto de inicio para la generación de números aleatorios. Permite obtener resultados reproducibles cada vez.
+**set.seed()**
+
+2.- Genera (n) números aleatorios para la distribución normal con promedio (mean) y desviación estandar (sd).
+**rnorm(n, mean, sd)**
+
+3.- Genera (n) números aleatorios para la distribución binomial con parámetros tamaño (size) y probabilidad de éxito de un ensayo (probe).
+**rbinom(n, size, prob)**
+
+4.- Genera (n) números aleatorios para la distribución de binomial negativa con parámetros promedio (mu) y varianza (mu + mu^2 / theta).
+**rnegbin (n, mu, theta)**
+
+### EJERCICIOS VARIABLE ALEATORIA CONTINUA CON DISTRIBUCIÓN NORMAL.
+
+En este ejercicio debe simular una población de 1000 pulpos gigantes con promedio de peso de 50Kg y desviación estandar de 10Kg
+
+**Ejercicio 1.** Cree un objeto llamado "Size" para representar el tamaño de los pulpos. Use **set.seed(123)** para iniciar una semilla de su simulación. Simule una muestra aletoria con distribución normal usando **rnorm()**: Considere 1000 pulpos con una media de 50 Kg y una desviación estandar de 10 Kg. Use las funciones **head()**, **mean()**, **sd()** para observar sus datos. Compare las funciones **range()**, **quantile()** y **summary()**.
+
+```{r, out.width = '80%'}
+# Generar una muestra 
+set.seed(123)
+Size <- rnorm(1000, 50, 10)
+head(Size)
+mean(Size)
+sd(Size)
+range(Size)
+quantile(Size)
+summary(Size)
+
+```
+
+**Ejercicio 2.** A partir de la simulación anterior elabore un histograma **hist()** y una gráfica de cajas y bigotes **boxplot()**. Investigue y use la función **par(mfrow=c(1,2))** para generar las gráficas en una sola fila y con 2 columnas. 
+
+```{r}
+# Observar 
+par(mfrow=c(1,2))
+hist(Size, col="blue", main = "Histogram", xlab = "Size (mm)")
+boxplot(Size, col="red", main = "Boxplot", ylab = "Size (mm)")
+```
+
+**Ejercicio 3.** A partir de la simulación anterior y usando la función **plot()** elabore:
+
+a) Gráfica con la distribución acumulada empírica. Debe incluir la función **ecdf()**.
+
+```{r}
+# Distribución acumulada empírica.
+plot(ecdf(Size), main="Distribución acumulada empírica", xlab="Size (mm)")
+```
+
+b) Gráfica con la densidad empírica. Debe incluir la función **density()**.
+
+```{r}
+# Densidad empírica.
+plot(density(Size), main="Densidad empírica", xlab="Size (mm)")
+```
+
+
+**Ejercicio 4.** Utilice la función de distribución acumulada empírica **ecdf()** para determinar que probabilidad tiene de encontrar un pulpo menor a 40 Kg y otro mayor de 80 Kg:
+
+Primero cree una función de distribución acumulada empírica para los datos del tamaño celular.
+```{r}
+Fn <- ecdf(Size)
+Fn
+```
+
+a) Un pulpo menor a 40 Kg.
+```{r}
+# Fn(x) returns the percentiles for x
+Fn(40) 
+```
+
+b) Un pulpo mayor a 80 Kg.
+
+```{r}
+# 1- Fn(x) returns 1 - the percentiles for x
+1 - Fn(80)  
+```
+
+**Ejercicio 5.** Use las funciones **qqnorm()** y **qqline()** para determinar si los datos del tamaño de los pulpos simulados desvian de lo esperado para una variable con distribución normal. Note que esto es trivial puesto que la simulación deriva de una función normal, pero posteriormente lo podrá aplicar para cualquiera variable de estudio.
+
+```{r, out.width = '80%'}
+qqnorm(Size, col="blue4")
+qqline(Size, col="red", lwd=2)
+```
+
+**Ejercicio 6.** Use la función **dnorm()** para determinar:
+
+a) ¿Cuál es la probabilidad de que una pulpo tenga un tamaño igual a 54 Kg?
+
+```{r}
+
+# Probabilidad de que un pulpo mida 54 Kg.
+dnorm(54, 50, 10)
+
+```
+
+b) ¿Cuál es la probabilidad de que un pulpo tenga un tamaño igual a 58?, redondee su resultado a 3 decimales.
+
+```{r}
+# Probabilidad de que un pulpo mida 58 Kg redondeado a 3 decimales.
+round(dnorm(58, 50, 10), 3)
+```
+
+b) ¿Cuál es la probabilidad de que un pulpo tenga un tamaño igual a 60?. Multiplique por 100 y redondee su resultado a 2 decimales.
+
+```{r}
+# Probabilidad de que un pulpo mida 60 Kg, multiplicado por 100 y redondeado a 2 decimales
+
+paste0(round(dnorm(60, 50, 10)*100, 2), "%")
+```
+
+**Ejercicio 7.** En la siguiente figura, la linea roja representa 1 ds sobre y bajo la media, la linea azul representa la media. ¿Que proporción de los datos está contenido entre una desviación estandar hacia arriba y hacia abajo de la media?.
+
+```{r, echo=TRUE}
+plot(density(Size), main="Densidad empírica", xlab="Size (Kg)")
+abline(v=50 + 10, col="red", lwd=2)
+abline(v=50 - 10, col="red", lwd=2)
+abline(v=50, col="blue", lwd=2)
+```
+
+Proporción de datos 1 desviación estandar sobre la media.
+```{r}
+p1 <- 1 - Fn(50 + 10)
+p1
+```
+
+Proporción de datos 1 desviación estandar bajo la media.
+```{r}
+p2 <- Fn(50 - 10)
+p2
+```
+
+Proporción de datos entre 1 desviación estandar arriba y abajo de la media multiplicado por 100.
+
+```{r}
+paste0(((1 - (p1 + p2))*100),"%")
+# Este valor es muy cercano al 68% teórico de una variable con distribución normal.
+```

@@ -107,6 +107,6 @@ Luego guarde inmediatamente su script como **script_2_nombre_apellido.Rmd**. Al 
 
 **b).** Usando esta plantilla, elabore un reporte con el análisis de datos de las librerías **_rivers_** y **_BOD_** que realizó en la clase 2.
 
-Use esta [Hoja de referencia](https://github.com/rstudio/cheatsheets/raw/master/translations/spanish/rmarkdown-2.0_Spanish.pdf) como ayuda para elaborar reportes Rmarkdown.
+Use esta [Hoja de referencia](https://github.com/BetaProjectR/IntroAnalisisDatosRv21/blob/main/pdf/rmarkdown-spanish.pdf) como ayuda para elaborar reportes Rmarkdown.
 
 Use está guía de sintaxis de **Markdown** para mejorar el estilo de sus documentos [Rmarkdown](https://rstudio-pubs-static.s3.amazonaws.com/330387_5a40ca72c3b14824acedceb7d34618d1.html). 

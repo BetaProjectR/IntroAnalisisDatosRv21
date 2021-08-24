@@ -65,7 +65,7 @@ Nunca intentes comunicar mucha información simultáneamente.
 <div class="centered">
 <div class="black">
 
-**EXISTEN DISTINTAS FORMAS DE  CREAR REPORTES**
+**EXISTEN DISTINTAS FORMAS DE CREAR REPORTES**
 
 </div>
 </div>
@@ -76,7 +76,12 @@ Nunca intentes comunicar mucha información simultáneamente.
 Microsoft Word, Microsoft Power Point,formato de documento portátil (pdf)
 
 - **What You See Is What You Mean**.
-Latex, Markdown, HTML.
+Latex, Markdown, HTML, Rmarkdown
+
+
+```{r, echo=FALSE, out.width = '100%' }
+knitr::include_graphics("Rmarkdown.png")
+```
 
 </div>
 
@@ -93,6 +98,24 @@ Latex, Markdown, HTML.
 
 Rmarkdown es un procesador de texto que permite la creación de reportes de alta calidad. 
 
+```{r, echo=FALSE, out.width = '100%' }
+knitr::include_graphics("Reportes.png")
+```
+
+</div>
+
+## 
+<div class="centered">
+<div class="black">
+
+**VENTAJAS DE USAR RMARKDOWN?**
+
+</div>
+</div>
+
+<div class="black">
+
+
 - Es un software libre y de código abierto, por lo que podemos usarlo sin necesidad de comprar una licencia.
 
 - Permite trabajar bajo el paradigma de la investigación reproducible (texto sin formato).
@@ -103,48 +126,62 @@ Rmarkdown es un procesador de texto que permite la creación de reportes de alta
 
 </div>
 
+
 ## 
 <div class="centered">
 <div class="black">
 
 ## 
 
-**¿CÓMO FUNCIONA?**
+**¿CÓMO FUNCIONA R MARKDOWN?**
 
 </div>
 </div>
 
 <div class="centered">
 <div class="black">
-Trabajar con R permite realizar **Investigación reproducible**. 
-La investigación reproducible implica que desde los mismos datos y códigos se generarán los mismos resultados.
 
 </div>
 </div>
 <div class="columns-1">
 ```{r, echo=FALSE, out.width = '100%' }
-knitr::include_graphics("Investigacion_reproducible.png")
+knitr::include_graphics("Rmarkdown1.png")
 ```
 </div>
 
 ## 
+
+**¿CÓMO FUNCIONA R MARKDOWN?**
+
+</div>
+</div>
+
 <div class="centered">
 <div class="black">
+
+</div>
+</div>
+<div class="columns-1">
+```{r, echo=FALSE, out.width = '100%' }
+knitr::include_graphics("Rmarkdown2.png")
+```
+</div>
+
 
 ## 
 
 <div class="centered">
 <div class="black">
 
-**Práctica con R y Rstudio**
+**PRÁCTICA CON RMARKDOWN**
 
 </div>
 </div>
 
 <div class="black">
-**1).** **Guía de trabajo programación con R disponible en drive.** Ingresa al siguiente link de la *[clase 1](https://drive.google.com/drive/folders/1odusxY-1fNnIwWOhoKc3bqulC3SdEFds?usp=sharing)*
+**1).** **Guía de trabajo programación con Rmarkdown disponible en drive.** Ingresa al siguiente link de la *[clase 1](https://drive.google.com/file/d/1iHINfDuqXuXt7E7SZvslXQDGaT5JLgHu/view?usp=sharing)*
 
-**2).** **La tarea se realiza en Rstudio.cloud**. Ingresa al siguiente proyecto de *[Rstudio.Cloud](https://rstudio.cloud/spaces/160160/project/2759212)* 
+**2).** **La tarea se realiza en Rstudio.cloud**. Ingresa al siguiente proyecto de *[Rstudio.Cloud](https://rstudio.cloud/spaces/160160/project/2773832)* 
 
 </div>
 
@@ -161,13 +198,13 @@ knitr::include_graphics("Investigacion_reproducible.png")
 
 <div class="black">
 
-* Ruta del análisis de datos reproducible con **R**.
+- Revisión de ventajas de la elaborar reportes dinámicos con Rmarkdown.
 
-* Iniciamos un proyecto de análisis de datos.
+- Escribir un código de programación con Rmarkdown.
 
-* Escribimos un código de programación con **R** y **Rstudio cloud**.
+- Elaborar diferentes reportes dinámicos.
 
-* Nos familiarizamos con la manipulación de objetos.
+
 
 </div>
 

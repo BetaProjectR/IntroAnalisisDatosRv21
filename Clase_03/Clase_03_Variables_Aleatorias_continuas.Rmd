@@ -25,9 +25,9 @@ library(Rlab)
 
 **2.- Práctica con R y Rstudio cloud**
 
-- Observa y predice una variable aleatoria continua.
+- Simular, observar y predicer una variable aleatoria continua con **R**.
 
-- Elabora un reporte dinámico en formato pdf.
+- Elabora un reporte dinámico en formato pdf con **Rmarkdown**.
 
 ## **TIPOS DE VARIABLES ALEATORIAS**
 

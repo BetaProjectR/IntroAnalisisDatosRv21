@@ -125,6 +125,6 @@ Finalmente, para poder generar un reporte debes presionar el **triángulo negro*
 
 Para finalizar, puedes generar dos reportes adicionales uno en formato html y otro en formato word. Compare los documentos e identifique sus diferencias.
 
-Para más detalles de como trabajar con Rmarkdown investigue el siguiente [link](https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-spanish.pdf).
+Para más detalles de como trabajar con Rmarkdown investigue el siguiente [link](https://swcarpentry.github.io/r-novice-gapminder-es/15-knitr-markdown/).
 
 

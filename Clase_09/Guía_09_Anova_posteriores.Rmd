@@ -1,0 +1,292 @@
+---
+title: "Clase 09 - Guía Análisis de varianza y posteriores"
+subtitle: OCE 386 - Introducción al análisis de datos con R.
+author:
+ name: Dr. José Gallardo Matus
+ affiliation: Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    code_folding: hide
+  word_document: default
+  pdf_document: default
+---
+
+<style>
+#TOC {
+  color: black;
+  font-familiy: Calibri;
+  font-size: 14px;
+  border-color: #708090; 
+}
+body {
+   color: black;
+   font-familiy: Calibri;
+}
+
+pre {
+  color: black;
+  background-color: #F8F8FF;
+}
+# header {
+  color: #800000;
+  font-familiy: Calibri;
+  background-color: #F5F5F5;
+  opacity: 0.8;
+  font-size: 16px;
+}
+</style>
+
+---
+
+#### **Introducción**
+
+**Análisis de Varianza**
+
+Es una herramienta de inferencia estadística muy usada en el campo de investigación científico-técnica de las ciencias biológicas y en particular en la acuicultura. El ANOVA es un método estadístico cuya finalidad es probar hipótesis referidas a los parámetros de posición de dos o más poblaciones en estudio.
+
+**Comparación a posteriori**
+
+Existen diversas pruebas a posteriori para analizar el porque se rechaza la hipotesis nula que se está considerando en nuestro estudio; es decir, si rechazamos la hipótesis nula del ANOVA, la pregunta que podríamos hacernos es la siguiente **¿cuál o cuáles de las medias poblacionales en estudio son las diferentes?** Existen diversas pruebas a posteriori para analizar está problemática; no obstante, en esta guía usaremos la **_prueba de Tukey_**.
+
+#### **Objetivos de aprendizaje**
+
+Los objetivos de aprendizaje de esta guía son:
+
+**1**. - Elaborar hipótesis estadísticas.
+
+**2**. - Realizar análisis de varianza y comparaciones a posteriori. 
+
+**3**. - Elaborar un reporte dinámico en formato pdf con **[Rmarkdown](https://rmarkdown.rstudio.com/)**.
+
+#### **Comandos**
+
+A continuación, se presentan algunos comandos que deberá usar para resolver los ejercicios de esta guía.
+
+**1.-** **lm():** se utiliza para ajustar modelos lineales. También, se puede utilizar para realizar regresiones, análisis de varianza de un factor o dos factores de clasificación (se puede considerar interacción entre los factores) y análisis de covarianza (aunque aov puede proporcionar una interfaz más conveniente para el ANOVA).
+
+**2.-** **aov():** se usa para ajustar un modelo de análisis de varianza.
+
+**3.-** **anova():** se usa para hacer un ANOVA sobre el objeto obtenido al ajustar un modelo con las funciones lm() o aov().
+
+**4.-** **TukeyHSD():** se usa para hacer la prueba a posteriori de Tukey.
+
+**Nota:** La prueba Tukey trabaja sobre un objeto **_aov_**, no sobre un objeto lm.
+
+### **Ejercicio 1.** **Elaborar archivo Rmarkdown**
+
+Usando lo aprendido en la unidad 1 del curso elabore y configure un archivo o file con extensión **.Rmd** y configúrelo para exportar el resultado como un documento dinámico **pdf**.
+
+Incluya en metadatos: Título: Reporte Anova y posteriores, nombre del autor: Su nombre.
+
+Luego guarde inmediatamente su *script* como **script_09_nombre_apellido.Rmd**. Al finalizar la actividad deberá exportar y almacenar este script tareas de aula virtual.
+
+### **Ejercicio 2.** **Configuración del reporte**
+
+En el primer bloque de códigos o **chunk** configure los comandos de la siguiente manera **_knitr::opts_chunk$set(echo = TRUE)_** y cargue las librerías  **stats**, **graphics**, **ggplot2**, **readxl**, **pander**, **dplyr** y **knitr**.
+
+```{r setup, include=TRUE, warning=FALSE,message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# Librería stats está instalada por defecto en la base de R
+library(stats)
+
+# Librería graphics está instalada por defecto en la base de R
+library(graphics)
+
+# Librería para gráficas avanzadas
+library(ggplot2)
+
+# Librería para importar datos
+library(readxl)
+
+# Librería para mostrar en formato tabla los resultados de un objeto
+library(pander)
+
+# Librería para usar funciones de tidyverse
+library(dplyr)
+
+# Librería para hacer tablas
+library(knitr)
+
+```
+
+### **Ejercicio 3.** **Anova de un factor con dos niveles**
+
+La base de datos **Peces_intermareales_data.xlsx** contiene información del peso de cuerpo **(Body_Weight_g)** y **Especie** de 200 peces intermareales. Los investigadores desean evaluar si las especies **Torito** (*Scartichthys viridis*) y (*Hypsoblennius sordidus*) difieren en su tamaño. Datos simulados a partir de información estadística publicada por [Quijada y Caceres, 2000](http://rchn.biologiachile.cl/pdfs/2000/4/Quijada_%26_Caceres_2000.pdf) 
+
+**a).**  Formule la hipótesis nula y alternativa para este experimento.
+
+```{r}
+#**H~0~**: $$ \mu_{Torito} = \mu_{Hypsoblennius sordidus}$$
+
+#**H~1~**: $$ \mu_{Torito} \ne \mu_{Hypsoblennius sordidus}$$
+```
+
+**b).** Importe el set de datos **Peces_intermareales_data.xlsx** usando la función **read_excel()** de la librería **readxl**, llame al objeto Peces_intermareales. Transformar en factor la variable Especie con la función **as.factor()**. Explore el set de datos usando las funciones **head()**, **str()** y **summary()**.
+
+```{r}
+Peces_intermareales <- read_excel("Peces_intermareales_data.xlsx")
+Peces_intermareales$Especie <- as.factor(Peces_intermareales$Especie)
+head(Peces_intermareales)
+str(Peces_intermareales)
+summary(Peces_intermareales)
+```
+
+**c).** Realice un análisis exploratorio de datos de la variable bajo estudio. A partir del objeto **Peces_intermareales** elabore un gráfico de cajas y bigotes para la variable **Body Weight (g)**. Use el comando tuberías **%>%** de la librería **dplyr**. Etiquete los ejes y de un nombre a la figura.
+
+```{r}
+Peces_intermareales %>%
+          ggplot(aes(x= Especie,y=`Body Weight (g)`,fill=Especie))+
+                geom_boxplot()+
+                theme(legend.position="none")+
+                labs(x="Especie",y="Body Weight (g)",title="Comparación del peso del cuerpo (Body Weight) entre Especies")
+
+```
+
+**d).** Incluya una tabla con los estimadores puntuales de los promedios y las varianzas de la variable Body Weight (g) para cada nivel del factor Especie. Use las funciones **filter**, **summarize** y **%>%** de la librería dplyr para calcular los estimadores. Use el comando **knitr::kable()** para generar la tabla.
+
+Promedio y varianza de la variable Body Weight para la Especie Torito. 
+```{r, echo=TRUE, warning=FALSE,message=FALSE}
+Torito <- Peces_intermareales %>%
+                             filter(Especie == "Torito") %>%
+summarize(`Media Torito`= mean(`Body Weight (g)`),
+          `Varianza Torito`= var(`Body Weight (g)`))
+
+Torito
+```
+
+
+Promedio y varianza de la variable Body Weight para la Especie Cachudito. 
+```{r, echo=TRUE, warning=FALSE,message=FALSE}
+
+Cachudito <- Peces_intermareales %>%
+                        filter(Especie == "Cachudito") %>%
+summarize(`Media Cachudito`= mean(`Body Weight (g)`),
+          `Varianza Cachudito`= var(`Body Weight (g)`))
+
+Cachudito
+```
+
+Tabla resumen.
+```{r, echo=TRUE, warning=FALSE,message=FALSE}
+
+Tabla <- data.frame(Torito, Cachudito)
+colnames(Tabla) <- c("Media Torito","Varianza Torito", "Media Cachudito","Varianza Cachudito")
+
+knitr::kable(Tabla,caption ="Medias y varianzas de la variable Body Weight (g) para las Especies Torito y Cachudito")
+```
+
+**e).** Realice el ajuste del siguiente modelo usando la función aov(), donde los parámetros son los siguientes: variable respuesta **Body Weight (g)** y como factor de clasificación **Especie**, como set de datos (data=Peces intermareales). Llame al objeto anova1. Utilice el simbolo ~ para relacionar la variable respuesta con el factor de clasificación. Luego, realice el anova() del objeto anova1. 
+
+```{r}
+anova1 <- aov(`Body Weight (g)` ~ Especie, data=Peces_intermareales)
+anova(anova1)
+```
+
+Use la función pander::pander() para mostrar los resultados del modelo (anova1) en una tabla.
+```{r}
+pander::pander(anova1, caption = "ANOVA a una vía de clasificación usando la función aov().")
+```
+
+
+**f).** Interprete los resultados.
+```{r}
+#El efecto Especie es estadísticamente significativo (p valor menor al nivel de significación del 5%). En consecuencia se rechaza la hipótesis nula. Por lo tanto, existen diferencias entre los pesos finales promedios de las Especie Torito y Cachudito. 
+
+```
+
+### **Ejercicio 4.** **Anova de dos factores y prueba a Posteriori Tukey**
+
+En este estudio de caso trabajaremos con el archivo **"dietas.xlsx"** contiene el registro de pesos de 1000 robalos de un experimento de alimentación con 6 dietas diferentes de algas.
+
+Las variables de estudio se describen a continuación:
+
+|  **variable** | **Descripción**| **Tipo de efecto**|
+|:-------------|:------------------| :------------------|
+| **Pez** | Identificador del pez | Criterio de clasificación |
+| **feed** | 6 tipos de dietas | Variable explicativa |
+| **sex** | Sexo del pez  | Variable explicativa |
+| **weight** | Peso en gramos. | Variable respuesta |
+
+
+**a).** Formule la hipótesis nula y alternativa para evaluar si el peso es el mismo entre los peces con distinto sexo y alimentados con diferente dieta.
+
+```{r}
+#**H~0~**: $$\mu_{_Tank1} = \mu_{Animal_Tank2} = \mu_{Animal_Tank3} = \mu_{Vegetal_Tank1} = \mu_{Vegetal_Tank2} = \mu_{Vegetal_Tank3}$$
+
+#**H~1~**: Al menos una de las medias del peso es diferente para cada dieta en cada sexo.
+```
+
+**b)** Importe el set de datos **dietas.xslx** usando la función **read_excel()** de la librería **readxl**.
+
+Transforme a factor las columnas **pez**, **feed** y **sex** con la función **as.factor()**. Luego, explore el set de datos usando la función **summary()** y explore los factores **feed** y **sex** con la función **table()**.
+
+```{r}
+dietas <- read_excel("dietas.xlsx")
+dietas$pez<- as.factor(dietas$pez)
+dietas$feed<- as.factor(dietas$feed)
+dietas$sex<- as.factor(dietas$sex)
+summary(dietas)
+table(dietas$feed, dietas$sex)
+```
+
+**c).** Realice un análisis exploratorio de datos de la variable bajo estudio. A partir del set de datos de elabore un gráfico de cajas y bigotes las funciones **ggplot** y **geom_boxplot()** para la variable **weight**, como criterios de clasificación use dietas y sexo, particine la gráfica en dos paneles usando usando **facet_wrap(~ sex)**.
+
+```{r}
+dietas %>%
+                ggplot(aes(x= feed,y=weight,fill=sex))+
+                geom_boxplot()+
+                theme(legend.position="none")+
+                labs(x="Dieta",y="Peso (g)",title="Comparación de Peso en función de la dieta y sexo")+
+                facet_wrap(~ sex)
+```
+
+**d)** Realice ahora una gráfica de interacción y una gráfica de tamaño de los efectos de la variable *weight* usando las funcines **interaction.plot()** y **plot.design()**. Incluya *feed* y *sex* como factores.
+
+```{r}
+interaction.plot(dietas$feed, dietas$sex, dietas$weight, fun = mean, xlab = "", ylab = "Peso promedio (g)", col=1:2, trace.label="Sexo", pch = c(15, 16), type = "b")
+
+```
+
+```{r}
+plot.design(dietas$weight~ dietas$sex * dietas$feed, xlab = "Factores", ylab="Weight", col="blue")
+
+```
+
+**e).** Realice el ajuste del siguiente modelo usando la función aov(), donde los parámetros son los siguientes: variable respuesta **weight** y como factores de clasificación **feed** y **sex**, como set de datos (data=dietas). Llame al objeto anova2. Utlice el simbolo ~ para relacionar la variable respuesta con los factores de clasificación y su interacción. Realice el anova() del objeto anova2. Use la función pander::pander() para mostrar los resultados del modelo (anova2), coloque en el parámetro caption un título a la tabla.
+
+```{r}
+anova2 <- aov(weight ~ feed*sex, data=dietas)
+```
+
+```{r}
+anova(anova2)
+```
+
+```{r}
+pander::pander(anova2, caption = "ANOVA a dos vías de clasificación usando la función aov().")
+```
+
+**f).** Realice una prueba *a posteriori* de Tukey sobre el objeto anova2. Para esto use la función TukeyHSD(). LLame el objeto Tukey_anova2.
+
+```{r}
+Tukey_anova2<- TukeyHSD(anova2)
+Tukey_anova2
+```
+
+**g).** Interprete los resultados respondiendo las siguientes preguntas.
+
+- ¿Cuál de los dos factores tiene mayor influencia en la variable respuesta?
+- ¿Existen diferencias significativas entre dietas y entre sexos?
+- ¿Observa algún patrón claro de interacción entre sex y feed?
+- ¿La interacción es significativa?
+
+```{r}
+#Los efectos Diet, Tank y la interacción Diet-Tank no son estadísticamente significativos (p valor mayor al nivel de significación del 5%). En consecuencia no hay evidencia para rechazar la hipótesis nula. Por lo tanto, no existen diferencias entre las pesos iniciales promedio para las dietas Animal y Vegetal en los 3 Tanques.
+```
+

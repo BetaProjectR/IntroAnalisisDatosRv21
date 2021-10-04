@@ -1,6 +1,6 @@
 ---
-title: "Clase 2 - Programación con Rmarkdown"
-subtitle: 'OCE 386 - Introducción al análisis de datos con R'
+title: "Clase 02 - Programación con Rmarkdown"
+subtitle: 'Diplomado en Análisis de datos con R para la Acuicultura'
 author: Dr. José Gallardo Matus. | Pontificia Universidad Católica de Valparaíso | <jose.gallardo@pucv.cl>    
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: 
@@ -179,9 +179,9 @@ knitr::include_graphics("Rmarkdown2.png")
 </div>
 
 <div class="black">
-**1).** **Guía de trabajo programación con Rmarkdown disponible en drive.** Ingresa al siguiente link de la *[clase 1](https://drive.google.com/file/d/1iHINfDuqXuXt7E7SZvslXQDGaT5JLgHu/view?usp=sharing)*
+**1).** **Guía de trabajo programación con Rmarkdown disponible en drive.** Ingresa al siguiente link de la *[clase 02](https://drive.google.com/drive/folders/1m71xj_zuwMBMrX7vuOCx54FW8CA7kA3X?usp=sharing)*
 
-**2).** **La tarea se realiza en Rstudio.cloud**. Ingresa al siguiente proyecto de *[Rstudio.Cloud](https://rstudio.cloud/spaces/160160/project/2773832)* 
+**2).** **La tarea se realiza en Rstudio.cloud**. Ingresa al siguiente proyecto de *[Rstudio.Cloud](https://rstudio.cloud/spaces/175863/project/2974659)* 
 
 </div>
 

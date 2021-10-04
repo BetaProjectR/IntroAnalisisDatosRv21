@@ -217,7 +217,7 @@ Las variables de estudio se describen a continuación:
 **a).** Formule la hipótesis nula y alternativa para evaluar si el peso es el mismo entre los peces con distinto sexo y alimentados con diferente dieta.
 
 ```{r}
-#**H~0~**: $$\mu_{_Tank1} = \mu_{Animal_Tank2} = \mu_{Animal_Tank3} = \mu_{Vegetal_Tank1} = \mu_{Vegetal_Tank2} = \mu_{Vegetal_Tank3}$$
+#**H~0~**: $$\mu_{Macho_d1} = \mu_{Macho_d2} = \mu_{Macho_d3} = \mu_{Macho_d4} = \mu_{Macho_d5} = \mu_{Macho_d6}$$ = $$\mu_{Hembra_d1} = \mu_{Hembra_d2} = \mu_{Hembra_d3} = \mu_{Hembra_d4} = \mu_{Hembra_d5} = \mu_{Hembra_d6}$$
 
 #**H~1~**: Al menos una de las medias del peso es diferente para cada dieta en cada sexo.
 ```
@@ -272,21 +272,34 @@ anova(anova2)
 pander::pander(anova2, caption = "ANOVA a dos vías de clasificación usando la función aov().")
 ```
 
-**f).** Realice una prueba *a posteriori* de Tukey sobre el objeto anova2. Para esto use la función TukeyHSD(). LLame el objeto Tukey_anova2.
+**f).** Realice una prueba *a posteriori* de Tukey sobre el objeto anova2. Para esto use la función **TukeyHSD()**. Note que dado que no hay un efecto significativo de interacción debe crear un nuevo modelo de anova aov(weight ~ feed + sex, data=dietas) antes de ejecutar el test de tukey.
 
+Nueva anova
 ```{r}
-Tukey_anova2<- TukeyHSD(anova2)
-Tukey_anova2
+anova3 <- aov(weight ~ feed + sex, data=dietas) 
+anova(anova3)
+
+```
+
+Prueba de tukey
+```{r}
+Tukey_anova3 <- TukeyHSD(anova3)
+Tukey_anova3
 ```
 
 **g).** Interprete los resultados respondiendo las siguientes preguntas.
 
-- ¿Cuál de los dos factores tiene mayor influencia en la variable respuesta?
-- ¿Existen diferencias significativas entre dietas y entre sexos?
+- ¿Cuál de los dos factores (dietas o sexo) tiene mayor influencia en la variable respuesta? 
+- ¿Entre que dietas existen diferencias significativas?
 - ¿Observa algún patrón claro de interacción entre sex y feed?
 - ¿La interacción es significativa?
 
 ```{r}
-#Los efectos Diet, Tank y la interacción Diet-Tank no son estadísticamente significativos (p valor mayor al nivel de significación del 5%). En consecuencia no hay evidencia para rechazar la hipótesis nula. Por lo tanto, no existen diferencias entre las pesos iniciales promedio para las dietas Animal y Vegetal en los 3 Tanques.
+# Con el modelo de interacción  tanto dieta como sexo tienen un efecto signifiativo sobre el peso de los animales. Sin embargo, al eliminar el efecto de interacción el efecto sexo no es significativo. 
+
+# Existen diferencias significativas entre d2-d1, d3-d1, d5-d1, d4-d2, d5-d2, d6-d2, d6-d3 y d6-d5.
+
+# La grafica d einteracción no muestra un claro efecto, y tampoco se comprueba un efecto con el test estadistico aplicado.
+
 ```
 

@@ -1,0 +1,205 @@
+---
+title: "Clase 10 - Guia evaluación de supuestos análisis paramétricos"
+subtitle: OCE 386 - Introducción al análisis de datos con R.
+author:
+ name: Dr. José A. Gallardo.
+ affiliation: Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    code_folding: hide
+  word_document: default
+  pdf_document: default
+---
+
+<style>
+#TOC {
+  color: black;
+  font-familiy: Calibri;
+  font-size: 14px;
+  border-color: #708090; 
+}
+body {
+   color: black;
+   font-familiy: Calibri;
+}
+
+pre {
+  color: black;
+  background-color: #F8F8FF;
+}
+# header {
+  color: #800000;
+  font-familiy: Calibri;
+  background-color: #F5F5F5;
+  opacity: 0.8;
+  font-size: 16px;
+}
+</style>
+
+---
+
+#### **Introducción**
+
+Los principales supuestos de los análisis paramétricos son:
+
+**Independencia**  
+Cada observación de la muestra no debe estar relacionada con otra observación de la muestra.  
+
+**Homocedasticidad**  
+En el caso de comparación de dos o más muestras éstas deben provenir de poblaciones con la misma varianza.
+
+**Normalidad**  
+Los datos de muestreo se obtienen de una población que tiene distribución normal. 
+
+**Regla de oro de los análisis paramétricos**  
+Primero evalúe independencia, luego homogeneidad de varianzas y finalmente normalidad.   
+
+Esto porque la mayoría de las pruebas estadísticas paramétricas no toleran desvios de independencia, pero son bastante robustos a desviaciones de homogeneidad de varianzas o normalidad. 
+
+#### **Objetivos de aprendizaje**
+
+Los objetivos de aprendizaje de esta guía son:
+
+**1**. - Implementar métodos gráficos y análisis de residuos para evaluar supuestos de los análisis paramétricos.
+
+**2**. - Implementar pruebas de hipótesis para evaluar supuestos de los análisis paramétricos. 
+
+**3**. - Elaborar un reporte dinámico en formato pdf con **[Rmarkdown](https://rmarkdown.rstudio.com/)**.
+
+#### Librerías
+
+|  **Librería** | **Función**      |
+|:-------------|:------------------|
+| **car** | Librería de acompañamiento al libro de J. Fox and S. Weisberg, An R Companion to Applied Regression, Third Edition, Sage, 2019. |
+| **lmtest** | Librería que permite realizar análisis de diagnósticos de modelos lineales. |
+
+#### **Comandos**
+
+A continuación, se presentan algunos comandos que deberá usar para resolver los ejercicios de esta guía.
+
+**1.-** Genera una gráfica de cuantiles teóricos de la distribución normal con relación a los cuantiles observados de los datos **qqnorm()**
+
+**2.-** Genera una línea de regresión Y-X de cuantiles observados de los datos en función de los cuantiles teóricos con la distribución normal **qqline()**
+
+**3.-** Función avanzada de gráficas qqplot de la librería car **qqPlot()**
+
+**4.-** Ajusta modelos lineales con el formato de fórmula *(Variable Respuesta ~ Variable/s Explicativas)* **lm()**
+
+**5.-** Realiza una prueba de normalidad de Shapiro-Wilk **shapiro.test()**
+
+**6.-** Realiza una prueba de F para comparación de varianzas de dos muestras que provienen de poblaciones normales **vartest()**
+
+**7.-** Prueba la hipótesis de homogeneidad de varianzas a través de 2 o más grupos, forma parte de la librería car **leveneTest()**
+
+**8.-** Realiza una prueba de autocorrelación de Durbin-Watson **dwtest()**
+
+### **Ejercicio 1.** Elaborar archivo Rmarkdown
+
+Elabore y configure un archivo o file con extensión **.Rmd** y configúrelo para exportar el resultado como un documento dinámico **pdf**.
+
+Utilice el siguiente ejemplo para completar la información de metadatos: Título: Reporte Evaluación de supuestos análisis paramétricos, nombre del autor: Su nombre.
+
+Luego guarde inmediatamente su *script* como **script_10_nombre_apellido.Rmd**. Al finalizar la actividad deberá exportar y almacenar este script en su carpeta drive de tareas.
+
+### **Ejercicio 2.** Configuración del reporte
+
+En el primer bloque de códigos o **chunk** configure los comandos de la siguiente manera **_knitr::opts_chunk$set(echo = TRUE)_** y cargue las librerías  **readxl**, **car**, **lmtest**, **dplyr**, **knitr** y **ggplot2**.
+
+```{r setup, include=TRUE, warning=FALSE,message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(readxl)
+library(car)
+library(lmtest)
+library(dplyr)
+library(knitr)
+library(ggplot2)
+
+```
+
+Ejecute cada uno de los siguientes ejercicios en uno o más bloques de códigos diferentes. Sea ordenado y documente su reporte adecuadamente.
+
+### **Ejercicio 3.** Estudio de caso peces epipelágicos
+
+En el siguiente ejercicio se desea evaluar si los datos de peso de 3 especies de peces epipelágicos cumplen con los supuestos para realizar un análisis de varianza. 
+
+**a).** Importe el set de datos **peces.xlsx** y realice un análisis exploratorio de datos. Transforme la variable Especie en factor y la variable Peso en número, use las funciones as.factor() y as.numeric().
+
+Incluya al menos un histograma y una gráfica de boxplot usando la librería ggplot2.
+
+```{r, echo=TRUE}
+Peces <- read_excel("peces.xlsx")
+Peces$Especie <- as.factor(Peces$Especie)
+Peces$Peso <- as.numeric(Peces$Peso)
+head(Peces)
+summary(Peces)
+```
+
+```{r}
+p <-  ggplot(Peces, aes(x=Peso))
+p + geom_histogram(color="darkblue", fill="lightblue", bins = 8)
+
+```
+
+
+```{r}
+q <-ggplot(Peces, aes(x=Especie, y=Peso, color=Especie)) +
+  geom_boxplot()+theme(legend.position="none")
+q
+```
+
+**b).** Elabore un modelo lineal del análisis de varianza para este experimento donde peso en la variable de interes en función de las especies.
+
+Modelo lineal
+```{r}
+lm.aov <- lm(Peso ~ Especie, data = Peces)
+anova(lm.aov)
+```
+
+**c).** Realice una evaluación de supuestos mediante métodos basados en análisis de residuales y pruebas de hipótesis.
+
+Independencia
+```{r}
+plot(lm.aov$residuals, pch=20, col = "blue")
+```
+
+```{r}
+dwtest(Peso ~ Especie, data = Peces,
+       alternative = c("two.sided"), 
+       iterations = 15)
+```
+
+Homogeneidad de varianzas
+```{r}
+plot(lm.aov, 1, pch=20, col = "blue")
+```
+
+```{r, echo=TRUE}
+leveneTest(Peso ~ Especie, data = Peces,
+           center = "median")
+```
+Normalidad
+```{r}
+plot(lm.aov, 2, pch=20, col = "blue")
+```
+
+```{r}
+aov_residuals <- residuals(object = lm.aov)
+hist(x= aov_residuals, main = "Histograma de residuales")
+shapiro.test(x= aov_residuals)
+```
+
+**d).** Interprete sus resultados y concluya si es posible hacer o no un análisis de varianza para este experimento.
+
+```{r}
+#Se realizaron los gráficos y las pruebas para cada uno de los supuestos. Los resultados de las pruebas mostraron que se cumplían los tres supuestos (independencia, homogeneidad de varianzas y normalidad); ya que éstas pruebas presentaron p-valores superiores al nivel de significación del 5%. Debido al cumplimiento de los tres supuestos, se concluye que para este experimento es posible realizar el análisis de varianza.
+
+# Del análisis de varianza es posible concluir que hay diferencias significativas de peso entre las especies.
+```
+
+

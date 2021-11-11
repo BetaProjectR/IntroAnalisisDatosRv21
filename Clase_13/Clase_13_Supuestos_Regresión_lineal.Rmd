@@ -1,0 +1,169 @@
+---
+title: "Clase 13 Supuestos de la regresión lineal"
+author: Dr. José A. Gallardo | Pontificia Universidad
+  Católica de Valparaíso
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  beamer_presentation: default
+  ioslides_presentation:
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 7
+    latex_engine: xelatex
+    pdf_document: null
+    template: quarterly_report.html
+  slidy_presentation: default
+subtitle: OCE 386 - Introducción al análisis de datos con R.
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(UsingR)
+library(ggpmisc)
+library(knitr)
+library(lmtest)
+library(car) 
+```
+
+# PLAN DE LA CLASE
+**1.- Introducción**
+    
+- Supuestos de la regresión lineal.
+- Independencia.
+- Linealidad.
+- Homogeneidad de varianzas.
+- Normalidad.
+- Efecto de los valores atípicos.
+
+**2.- Práctica con R y Rstudio cloud**
+
+- Realizar análisis de regresión lineal.
+- Realizar gráficas avanzadas con ggplot2. 
+- Elaborar un reporte dinámico en formato pdf.  
+
+# SUPUESTOS DE LA REGRESIÓN LINEAL SIMPLE
+
+- ¿Cuales son los supuestos?  
+Independencia.  
+Linealidad entre variable independiente y dependiente.  
+Homocedasticidad.  
+Normalidad.  
+
+- ¿Por qué son importantes?  
+Para validar el resultado obtenido.  
+En caso de incumplimiento se pueden transformar datos o elaborar otros modelos (Regresión logística).  
+
+# CASO DE ESTUDIO: CALENTAMIENTO GLOBAL.
+
+Calentamiento global [Fuente: climate.gov](https://www.climate.gov/maps-data/dataset/global-temperature-anomalies-graphing-tool)
+
+```{r, echo=FALSE, out.width = '100%',fig.align='center', message=FALSE}
+
+My_Theme = theme(
+  axis.title.x = element_text(size = 20),
+  axis.text.x = element_text(size = 20),
+  axis.title.y = element_text(size = 20),
+  axis.text.y = element_text(size = 20))
+
+
+Global_warming <- read_excel("Global_Warming.xlsx")
+formula1 <- y ~ x
+Global_warming$Year <- as.factor(Global_warming$Year)
+Global_warming$CO2_ppm <- as.numeric(Global_warming$CO2_ppm)
+Global_warming$`Global Temperature Anomalies` <- as.numeric(Global_warming$`Global Temperature Anomalies`)
+
+s <- Global_warming %>% ggplot(aes(x = CO2_ppm, y = `Global Temperature Anomalies`)) + 
+   geom_point() +
+   stat_smooth(method = "lm", col = "red", show.legend=TRUE)+  stat_poly_eq(aes(label = paste0("atop(", ..eq.label.., ",", ..rr.label.., ")")), formula = formula1, parse = TRUE, size = 8)+scale_x_continuous(n.breaks = 8)
+
+s+My_Theme
+```
+
+# INDEPENDENCIA: MÉTODO GRÁFICO
+
+```{r, echo=FALSE}
+reg <- lm(`Global Temperature Anomalies` ~ CO2_ppm, 
+          data = Global_warming)
+```
+
+```{r, echo=TRUE}
+plot(reg$residuals)
+abline(h=0, col="red")
+
+```
+
+# LINEALIDAD: MÉTODO GRÁFICO
+
+
+```{r, echo=TRUE}
+plot(reg, which=1)
+
+```
+
+# INDEPENDENCIA: Durbin Watson
+
+$H_0:$ No existe autocorrelación entre los datos (lo que deseamos).    
+$H_0:$ Existe autocorrelación entre los datos.  
+
+Dado que p < 0,05 se rechaza independencia.
+
+```{r, echo=TRUE}
+# durbin watson test
+durbinWatsonTest(reg) # library(car)
+```
+
+# HOMOGENEIDAD DE VARIANZAS: MÉTODO GRÁFICO
+
+**H~0~**:  $\sigma^2_1$ = $\sigma^2_2$  
+**H~A~**: $\sigma^2_1$ $\neq$ $\sigma^2_2$  
+
+```{r, echo=TRUE}
+plot(reg, which=3)
+
+```
+
+# HOMOGENEIDAD DE VARIANZAS: PRUEBAS DE HIPÓTESIS
+
+p > .05, No tenemos eviencias para rechazar que nuestros datos son homocedasticos.
+
+```{r, , echo=TRUE}
+ncvTest(reg) # library(car) 
+bptest(reg) # library(lmtest)
+```
+
+
+# NORMALIDAD: GRÁFICO DE CUANTILES
+
+
+```{r, echo=TRUE}
+qqPlot(reg) # library(car)
+```
+
+# VALORES ATÌPICOS
+
+```{r, echo=TRUE}
+plot(reg, which=4)
+```
+
+
+# PRÁCTICA ANÁLISIS DE DATOS
+- Guía de trabajo práctico disponible en drive y Rstudio.cloud.  
+**Clase_13**
+
+- El trabajo práctico se realiza en Rstudio.cloud.  
+**Guía 13 Regresión lineal**
+
+# RESUMEN DE LA CLASE
+
+- **Evaluar supuestos de análisis de regresión lineal**
+
+- **Independencia**
+
+- **Normalidad**
+
+- **Linealidad**
+
+- **Homogeneidad de varianzas**

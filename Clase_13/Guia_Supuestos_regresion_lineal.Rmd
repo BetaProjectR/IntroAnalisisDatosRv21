@@ -1,0 +1,190 @@
+---
+title: "Guía Supuestos de la Regresión lineal"
+subtitle: OCE 386 - Introducción al análisis de datos con R.
+author:
+ name: Dr. José A. Gallardo.
+ affiliation: Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    code_folding: hide
+  word_document: default
+  pdf_document: default
+---
+
+<style>
+#TOC {
+  color: black;
+  font-familiy: Calibri;
+  font-size: 14px;
+  border-color: #708090; 
+}
+body {
+   color: black;
+   font-familiy: Calibri;
+}
+
+pre {
+  color: black;
+  background-color: #F8F8FF;
+}
+# header {
+  color: #800000;
+  font-familiy: Calibri;
+  background-color: #F5F5F5;
+  opacity: 0.8;
+  font-size: 16px;
+}
+</style>
+
+### MODELOS LINEALES
+
+Los modelos lineales son ampliamente utilizados en oceanigrafía para explicar, modelar o predecir la relación lineal de una variable respuesta $Y$ con una o más variables predictoras $X_1,…,X_p$. 
+
+$$Y_{i} = \beta_{0} + \beta_{1} X_{i1} + \beta_{2} \beta_{i2} + ... + \beta_{p} X_{ip} + \epsilon_{i}$$
+
+Supuestos: $Y_i$  se distribuye **normalmente**
+
+* Si **p = 1**, el modelo es una regresión **_lineal simple_**.
+
+* Si **p > 1**, el modelo es una regresión **_lineal múltiple_**.
+
+* Si **p > 1** y alguna variable predictora es **categórica**, el modelo se denomina **_ANCOVA_**.   
+
+### PRUEBA DE HIPÓTESIS: COEFICIENTE DE REGRESIÓN E INTERCEPTO 
+
+**_Prueba de hipótesis del coeficiente de regresión y el intercepto_**
+
+La hipótesis nula en ambos casos es que el coeficiente del intercepto ($β_0$) y de la pendiente ($β_1$) son iguales a 0.
+
+$H_0:β_0 = 0$ y $H_0:β_1 = 0$
+
+### PREDICCIÓN A PARTIR DEL MODELO DE REGRESIÓN LINEAL SIMPLE
+
+El Coeficiente de determinación (**_R²_**) se calcula como el **cuadrado del coeficiente de correlación de pearson**. Este nos indica que tan buena es la predicción que el modelo hace de los datos.
+
+El R cuadrado ajustado (**_R² ajustado_**) nos dice qué porcentaje de la variación de la variable dependiente es explicado por la o las variables independientes de manera conjunta. En un modelo de regresión lineal, el **R² ajustado** es una medida de bondad que considera el número de variables existentes en el modelo.
+
+$$R^2_{ajust} =1-(1-R^2)\frac{n-1}{n-p-1}$$
+
+donde: 
+
+$n$ = tamaño de la muestra
+
+$p$ = cantidad de variables predictoras en el modelo
+
+**_Prueba de hipótesis del modelo completo_**
+
+La hipótesis nula es si los coeficientes son iguales a 0.
+
+$H_0:β_j = 0$ ; $j = 1, 2,...,k$
+
+#### **Objetivos de aprendizaje**
+
+Los objetivos de aprendizaje de esta guía son:
+
+**1**. - Realizar evaluación de supuestos de una regresión lineal.
+
+**2**. - Realizar gráficas avanzadas con ggplot2. 
+
+**3**. - Elaborar un reporte dinámico en formato pdf con **[Rmarkdown](https://rmarkdown.rstudio.com/)**.
+
+#### EJERCICIOS
+
+## ESTUDIO DE CASO: PREDICCIÓN DE TEMPERATURA AEREA EN RIOS.
+
+En este estudio de caso trabajaremos con un set de datos real obtenido de una investigación científica.
+
+La variable respuesta se denomina **AirTemp_observed** y se expresa en grados celcius. Para este set de datos existen dos variables predictoras denominadas **WaterTemp** y **Site** que corresponde a la temperatura superficial de diferentes ríos.  
+
+El objetivo es realizar una regresión lineal entre **AirTemp_observed** y **WaterTemp** evaluando los supuestos del modelo de regresión lineal.
+
+### **Ejercicio 1.** Elaborar y configurar Reporte en formato .Rmd
+
+Elabore un documento .Rmd y configure su reporte para exportar en .pdf. Instale solo las liberías que utilice para el análisis de los datos.
+
+```{r setup, include=TRUE, warning=FALSE,message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(UsingR)
+library(ggpmisc)
+library(knitr)
+library(car)
+library(lmtest)
+```
+
+Ejecute cada uno de los siguientes ejercicios en uno o más bloques de códigos diferentes. Sea ordenado y documente su reporte adecuadamente.
+
+### **Ejercicio 2.** Exploratorio set de datos snp.data
+
+Importe el set de datos **Temperature_dat.xlsx** y transforme solo la variable **Site** a factor, luego realice un análisis exploratorio de datos. 
+
+Incluya: 
+
+**a).** Resumen estadístico de todas las variables.
+
+```{r, warning=FALSE, message=FALSE}
+
+Tem_rivers <- read_excel("Temperature_dat.xlsx")
+
+Tem_rivers$Site <- as.factor(Tem_rivers$Site)
+summary(Tem_rivers)
+
+```
+
+**c).** realice un histograma de la variable respuesta **AirTemp_observed** y de la variable predictora **WaterTemp**.
+
+```{r, warning=FALSE, message=FALSE}
+
+ggplot(Tem_rivers, aes(x=AirTemp_observed))+
+  geom_histogram(color="darkblue", fill="lightblue")
+
+
+ggplot(Tem_rivers, aes(x=WaterTemp))+
+  geom_histogram(color="darkblue", fill="lightblue")
+
+
+```
+
+### **Ejercicio 3.** Regresión lineal simple.
+
+**a).** Realice una gráfica de dispersión (geom_point) de **AirTemp_observed** en función de **WaterTemp**, incluya el comando **geom_smooth(method=lm)** para agregar la línea de regresión a la gráfica.
+
+```{r warning=FALSE, message=FALSE}
+
+p <- ggplot(Tem_rivers, aes(x = WaterTemp, y = AirTemp_observed))
+p + geom_point() + xlab("Temperatura del agua") + geom_smooth(method=lm)
+
+```
+
+**b).** Realice un análisis de regresión lineal para investigar la asociación entre **AirTemp_observed** y **WaterTemp** usando las funciones **lm()**, **summary()**. Interprete los resultados del modelo lineal y responda las siguientes preguntas. ¿Qué representa el estimador de WaterTemp y del intercepto?. ¿La pendiente es significativamente distinta de cero?. ¿Y el intercepto?
+
+```{r warning=FALSE, message=FALSE}
+
+lm.tem <- lm(AirTemp_observed ~ WaterTemp, data = Tem_rivers)
+summary(lm.tem)
+
+```
+
+### **Ejercicio 4.** Evalue supuestos del modelo
+
+**a).** Evalue normalidad del modelo usando métodos gráficos y prueba de shapiro.
+
+```{r}
+shapiro.test (residuals (lm.tem ))
+plot(lm.tem , which = 2)
+```
+
+
+**b).** Evalue homogeneidad de varianzas usando el comando plot.
+
+```{r}
+plot(lm.tem , which = 1)
+```
+

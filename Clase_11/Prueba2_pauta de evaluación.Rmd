@@ -1,0 +1,125 @@
+---
+title: "Prueba 2 - Análisis exploratorio de datos y pruebas paramétricas"
+subtitle: 'OCE 386 - Inttroducción al Análisis de Datos con R'
+author:
+ name: Dr. José A. Gallardo.
+ affiliation: Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    code_folding: hide
+  word_document: default
+  pdf_document:
+    latex_engine: xelatex
+---
+
+<style>
+#TOC {
+  color: black;
+  font-familiy: Calibri;
+  font-size: 14px;
+  border-color: #708090; 
+}
+body {
+   color: black;
+   font-familiy: Calibri;
+}
+
+pre {
+  color: black;
+  background-color: #F8F8FF;
+}
+# header {
+  color: #800000;
+  font-familiy: Calibri;
+  background-color: #F5F5F5;
+  opacity: 0.8;
+  font-size: 16px;
+}
+</style>
+
+## INSTRUCCIONES GENERALES
+
+1) Elabore un script .Rmd usando el programa R-studio.cloud y guárdelo con el siguiente nombre: PRUEBA_2_OCE-386.Rmd.
+
+2) Realice un análisis exploratorio de datos y un análisis estadístico con el set de datos asignado para la prueba.
+
+3) Usando la librería knitr compile y genere un reporte en formato pdf. Envíe el reporte y el link  de Rstudio.cloud por medio del aula virtual.
+
+4) Plazo máximo de entrega: viernes 22 de octubre a las 18:00 PM.
+
+
+## PARÁMETROS DE EVALUACIÓN
+
+Parámetros para el cálculo de la nota.
+
+|  **Item** | **valor**      |
+|:-------------|:------------------|
+| **Nota máxima** | 7,0 |
+| **Nota mínima** | 1,0 |
+| **Nota aprobación** | 4,0 |
+| **Exigencia para aprobar** | 60% |
+| **Puntaje máximo** | 36 |
+
+
+Puntaje según nivel de logro alcanzado en cada ejercicio.
+
+|  **Nivel de logro** | **Puntaje**      |
+|:-------------|:------------------|
+| **Excelente** | 4 |
+| **Muy bueno** | 3 |
+| **Bueno** | 2 |
+| **Suficiente** | 1 |
+| **Insuficiente** | 0 |
+
+
+# **Ejercicios**
+
+## Ejercicio 1. Elabore y configure Reporte en formato .Rmd (4 puntos)
+
+Elabore un documento .Rmd y configure su reporte para exportar a .pdf. Instale las librerías que usted estime conveniente para el análisis de datos.
+
+```{r setup, include=FALSE, warning=FALSE,message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(ggplot2)
+library(kableExtra)
+library(pander)
+library(dplyr)
+library(knitr)
+library(lmtest)
+library(car)
+library(nortest)
+```
+
+## Ejercicio 2. Importar y configurar datos (4 puntos).
+Usando el archivo excel **dat_1**, importe a R los datos de las hojas **A** o **C** según corresponda. Revise que las variables fueron importadas correctamente como número o factor. Caso contrario realice las transformaciones correspondientes.
+
+## Ejercicio 3. Set de datos A (16 puntos). 
+
+Peces de diferentes años y genotipos fueron recolectados y medidos para un estudio genético de la maduración de gónadas. Se espera que peces con genotipo LL (Late) crezcan lentamente y maduren al año 2 (YC2), mientras que peces con genotipo EE (Early) se espera que crescan rápidamente y maduren al año 1 (YC1) de vida.
+
+Realice un análisis exploratorio de datos y luego un ANOVA de dos vías con interacción, determine que variables predictoras (Año y genotipo, en amarillo) influyen significativamente sobre la variable respuesta (longitud, en verde) y compruebe si se cumplen los supuestos del análisis de varianza.
+
+**Primero (4 puntos):** Elabore un análisis exploratorio de datos usando histogramas y gráficas de boxplot mediante los comandos de la librería ggplot2. Tambien elabore tablas de frecuencia y tablas con estadística descriptiva o resumen con la librería dplyr.
+
+**Segundo (4 puntos):** Use la función lm() para crear un objeto lm y construir el modelo de anova de dos vías con interacción. Use la función anova() para realizar el análisis de varianza.
+
+**Tercero (4 puntos):** Evalué si se cumplen los siguiente supuestos del análisis de varianza: a) Independencia de las observaciones, b) Normalidad de los residuos, c) Homogeneidad de varianzas. Use tanto métodos gráficos como pruebas estadísticas.
+
+**Cuarto (4 puntos):** Interprete los resultados del análisis exploratorio, del análisis de varianza y de los supuestos.
+
+## Ejercicio 4. Set de datos C (12 puntos).
+
+Peces adultos fueron recolectados en un río el año 2019 midiendo dos variables morfométricas: la longitud (length, mm) y el peso (weight, gramos). 
+
+**Primero (4 puntos):** Elabore un análisis exploratorio de datos usando histogramas y gráficas de dispersión mediante los comandos de la librería ggplot2. Tambien elabore tablas con estadística descriptiva o resumen usando la librería dplyr.
+
+**Segundo (4 puntos):** Evalué si se cumplen los siguiente supuestos del análisis de correlación: a) ¿Las variables son continuas?, b) ¿x e y tienen una relación lineal?, c) ¿La distribución conjunta es bivariable normal? Use métodos gráficos y pruebas estadísticas para evaluar normalidad.
+
+**Tercero (4 puntos):** Realice un test de correlación paramétrico o no paramétrico según el análisis previo de supuestos e interprete sus resultados.
+

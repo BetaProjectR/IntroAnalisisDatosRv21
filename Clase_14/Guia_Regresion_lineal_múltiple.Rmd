@@ -1,0 +1,226 @@
+---
+title: "Guía Regresión lineal múltiple"
+subtitle: OCE 386 - Introducción al análisis de datos con R.
+author:
+ name: Dr. José A. Gallardo.
+ affiliation: Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    code_folding: hide
+  word_document: default
+  pdf_document: default
+---
+
+<style>
+#TOC {
+  color: black;
+  font-familiy: Calibri;
+  font-size: 14px;
+  border-color: #708090; 
+}
+body {
+   color: black;
+   font-familiy: Calibri;
+}
+
+pre {
+  color: black;
+  background-color: #F8F8FF;
+}
+# header {
+  color: #800000;
+  font-familiy: Calibri;
+  background-color: #F5F5F5;
+  opacity: 0.8;
+  font-size: 16px;
+}
+</style>
+
+### MODELOS LINEALES
+
+Sea $Y$ una variable respuesta continua y $X_1,…,X_p$ variables predictoras, un modelo de regresión lineal múltiple se puede representar como,
+ 
+$$Y_{i} = \beta_{0} + \beta_{1} X_{i1} + \beta_{2} X_{i2} + ... + \beta_{p} X_{ip} + \epsilon_{i}$$
+
+Supuestos:
+
+1) No existe multicolinealidad.
+
+2) Los residuos distribuyen **normalmente**.
+
+3) Existe homogeneidad de varianzas.
+
+
+#### **Objetivos de aprendizaje**
+
+Los objetivos de aprendizaje de esta guía son:
+
+**1**. - Realizar análisis de regresión lineal múltiple.
+
+**2**. - Realizar gráficas avanzadas con ggplot2. 
+
+**3**. - Elaborar un reporte dinámico en formato pdf con **[Rmarkdown](https://rmarkdown.rstudio.com/)**.
+
+#### EJERCICIOS
+
+## ESTUDIO DE CASO: SET DE DATOS GALA
+
+En esta guía continuaremos trabajando con el set de datos **gala** de la librería **faraway**, pero ahora estudiaremos como variable respuesta el número de especies endémicas **Endemics**. 
+
+### **Ejercicio 1.** Elaborar y configurar Reporte en formato .Rmd
+
+Elabore un documento .Rmd y configure su reporte para exportar en .pdf. Instale solo las liberías que utilice para el análisis de los datos.
+
+```{r setup, include=TRUE, warning=FALSE,message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(ggplot2)
+library(dplyr)
+library(multcomp)
+library(psych)
+library(car)
+library(faraway)
+library(PerformanceAnalytics)
+```
+
+Ejecute cada uno de los siguientes ejercicios en uno o más bloques de códigos diferentes. Sea ordenado y documente su reporte adecuadamente.
+
+### **Ejercicio 2.** Exploratorio set de datos gala.
+
+El set de datos **gala** ya está instalado en R así que solo debe enlazarlo a su sesión de trabajo con el comando **attach(gala)**. 
+
+Incluya: 
+
+**a).** Realice análisis exploratorio de datos, use **head()** y **summary()**.
+
+```{r, warning=FALSE, message=FALSE}
+
+attach(gala)
+knitr::kable(
+  head(gala),
+  row.names = TRUE)
+```
+
+```{r}
+knitr::kable(
+  summary(gala))
+```
+
+**b).** Realice un histograma de la variable respuesta **Endemics** usando ggplot y el comando **geom_hostogram()**.
+
+```{r, warning=FALSE, message=FALSE}
+
+ggplot(gala, aes(x=Endemics))+
+  geom_histogram(color="darkblue", fill="lightblue", bins = 8)
+
+```
+
+
+**c).** Elimine el outlier detectado en clases para la variable AREA con el comando **is.na()** y luego evalue la correlación entre las variables predictoras:	Area, Elevation, Nearest,	Scruz y	Adjacent. Use el comando **chart.Correlation()**.
+
+Elimina outliers
+```{r}
+is.na(gala$Area) <- gala$Area >= 3000
+```
+
+Extrae variables para analizar
+
+```{r}
+gala_reducido <- gala[, c(3:7)]
+```
+
+Realiza gráfica y análisis de correlación
+```{r, warning=FALSE}
+
+chart.Correlation(gala_reducido, histogram=FALSE, pch=19, method = c("spearman"))
+```
+
+### **Ejercicio 3.** Análisis de regresión lineal múltiple.
+
+**a).** Realice un análisis de regresión lineal múltiple completo para investigar la asociación entre **Endemics** y todas las variables predictoras usando las funciones **lm()**, **summary()**. 
+
+Interprete los resultados del modelo lineal múltiple y responda las siguientes preguntas:   
+- ¿Qué representan los estimadores Beta: Intercept, Area, Elevation, Nearest,	Scruz y	Adjacent?.   
+- ¿Qué estimadores de Beta son significativamente distintas de cero?.   
+- ¿Cuál es la bondad de ajuste del modelo $R^2$ ajustado?.  
+- ¿Puede predecir el número de especies endémicas con este modelo lineal?.  
+
+```{r warning=FALSE, message=FALSE}
+
+fitFull <- lm(Endemics ~ Area + Elevation + Nearest + 
+              Scruz + Adjacent, data=gala)
+summary(fitFull)
+
+```
+
+**b).** Realice una gráfica de regresión lineal para representar la relación entre a) Area y Endemics y entre 2) Area y Elevation. Para ello investigue y use el comando **geom_smooth()**. 
+
+```{r, warning=FALSE}
+gala %>%
+ggplot(aes(Area,Endemics)) +
+  geom_jitter(size=4,alpha=0.7) +
+  theme_classic() + 
+   geom_smooth(method="lm", formula=y~x, se=T) +
+  scale_color_manual(values=c("blue","red")) + 
+  xlab("Area") + 
+  ylab("Número de especies endémicas")
+```
+
+```{r, warning=FALSE}
+gala %>%
+ggplot(aes(Elevation,Endemics)) +
+  geom_jitter(size=4,alpha=0.7) +
+  theme_classic() + 
+   geom_smooth(method="lm", formula=y~x, se=T) +
+  scale_color_manual(values=c("blue","red")) + 
+  xlab("Elevación") + 
+  ylab("Número de especies endémicas")
+```
+
+**c).** Realice un análisis de varianza e interprete los resultados, use la función **anova()** sobre el modelo lineal completo. Responda:
+
+- ¿Qué variables influyen significativamente sobre el número de especies endémicas?  
+- ¿Existe concordancia entre este resultado y la significancia de los coeficientes Beta de Area y Elevación?.  
+
+```{r}
+anova(fitFull)
+```
+
+### **Ejercicio 4.** Evaluación de supuestos modelo completo.
+
+**a).** Investigue como evaluar, evalue e interprete los supuestos de multicolinealidad, normalidad y homogeneidad de varianzas en un análisis de regresión lineal múltiple y responda.  
+
+- ¿Se cumple el supuesto de ausencia de multocolinealidad?.  
+- ¿Se cumple el supuesto normalidad?.  
+- ¿Se cumple el supuesto homogeneidad de varianzas?.  
+
+Multicolinealidad por vif (Variance Inflation Factor).
+```{r}
+vif(fitFull)
+```
+
+Normalidad
+```{r}
+shapiro.test (residuals (fitFull))
+plot(fitFull, which = 2)
+```
+
+Homogeneidad de varianzas usando plot
+```{r}
+plot(fitFull, which = 1)
+```
+
+
+### **Ejercicio 5.** Comparación modelo completo y modelo reducido
+
+Proponga y elabore usted un modelo reducido para predecir el número de especies endémicas justificando su decisión. Compare su modelo reducido con el modelo completo usando los comandos **anova()** y **AIC()**. Responda:
+
+
+
+¿Hay diferencias significativas entre ambos modelos?  
+¿Cuál es el mejor modelo para predecir el número de especies endémicas según el criterio AIC?  

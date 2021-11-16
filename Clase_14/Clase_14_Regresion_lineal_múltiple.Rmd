@@ -1,0 +1,209 @@
+---
+title: "Clase 14 Regresión lineal múltiple"
+author: Dr. José A. Gallardo | Pontificia Universidad
+  Católica de Valparaíso
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  beamer_presentation: default
+  ioslides_presentation:
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 7
+    latex_engine: xelatex
+    pdf_document: null
+    template: quarterly_report.html
+  slidy_presentation: default
+subtitle: OCE 386 - Introducción al análisis de datos con R.
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(UsingR)
+library(ggpmisc)
+library(knitr)
+library(lmtest)
+library(car) 
+library(faraway)
+library(kableExtra)
+```
+
+# PLAN DE LA CLASE
+
+**1.- Introducción**
+    
+- Modelo de regresión lineal múltiple.
+- ¿Cómo eliminar valores atípicos?
+- ¿Cómo seleccionar variables y comparar modelos?
+- Interpretación regresión lineal múltiple con R.
+
+**2.- Práctica con R y Rstudio cloud.** 
+
+- Realizar análisis de regresión lineal múltiple.  
+- Realizar gráficas avanzadas con ggplot2.  
+- Elaborar un reporte dinámico en formato pdf.  
+  
+
+# REGRESIÓN LINEAL MÚLTIPLE
+
+Sea $Y$ una variable respuesta continua y $X_1,…,X_p$ variables predictoras, un modelo de regresión lineal múltiple se puede representar como,
+ 
+$$Y_{i} = \beta_{0} + \beta_{1} X_{i1} + \beta_{2} X_{i2} + ... + \beta_{p} X_{ip} + \epsilon_{i}$$
+
+$\beta_{0}$ = Intercepto.
+$\beta_{1} X_{i1}, \beta_{2} X_{i2}, \beta_{p} X_{ip}$ = Coeficientes de regresión estandarizados.
+
+Si p = 1, el modelo es una regresión lineal simple.  
+Si p > 1, el modelo es una regresión lineal múltiple.  
+Si p > 1 y alguna variable predictora es Categórica, el modelo se denomina ANCOVA.
+
+# CASO DE ESTUDIO: GALÁPAGOS
+
+Estudio de diversidad de especies en islas galápagos considera 30 islas y 7 variables aleatorias: 5 de tipo continuo y 2 de tipo discreto.
+\  
+
+**Extracto del set de datos gala**
+
+```{r, echo=FALSE, out.width = '100%',fig.align='center', message=FALSE}
+
+attach(gala)
+
+### Observar
+knitr::kable(
+  head(gala),
+  row.names = TRUE) %>%
+          kable_styling(latex_options = "scale_down")
+
+```
+
+# DESCRIPCIÓN DE VARIABLES Y OBJETIVO
+
+**Objetivo de la RLM**
+
+Estimar o predecir el número de *Species* en función de algunas variables independientes o predictoras.
+
+|**Variable predictora** |**Descripción**|
+|:--:|:--:|
+|*Area*|Area of the island (km$^2$)|
+|*Elevation*|Highest elevation of the island (m)|
+|*Nearest*|Distance from the nearest island (km)|
+|*Scruz*| Distance from Santa Cruz island (km)|
+|*Adjacent*| Area of the adjacent island (square km)|
+
+
+# MODELO SIMPLE
+
+```{r, echo=TRUE}
+lm.1 <- lm (Species ~ Area, data=gala)
+```
+
+```{r}
+pander::pander(summary(lm.1), caption = "Modelo de regresión lineal simple del set de datos gala")
+```
+
+# RELACIÓN LINEAL Species ~ Area
+
+```{r, echo=FALSE, out.width = '90%', message=FALSE, fig.align='center'}
+
+formula1 <- y ~ x
+
+My_Theme = theme(
+  axis.title.x = element_text(size = 20),
+  axis.text.x = element_text(size = 20),
+  axis.title.y = element_text(size = 20),
+  axis.text.y = element_text(size = 20))
+
+
+
+q <- ggplot(gala, aes(x = Area, y = Species)) + 
+   geom_point() +
+   stat_smooth(method = "lm", col = "red", show.legend=TRUE)+  stat_poly_eq(aes(label = paste0("atop(", ..eq.label.., ",", ..rr.label.., ")")), formula = formula1, parse = TRUE, size = 8) + scale_x_continuous(n.breaks = 8)
+q+My_Theme
+
+```
+
+# RELACIÓN LINEAL Species ~ Area (sin outliers).
+
+```{r, echo=TRUE}
+is.na(gala$Area) <- gala$Area >= 3000
+```
+
+```{r, echo=FALSE, out.width = '90%', message=FALSE, fig.align='center', warning=FALSE}
+
+formula1 <- y ~ x
+
+My_Theme = theme(
+  axis.title.x = element_text(size = 20),
+  axis.text.x = element_text(size = 20),
+  axis.title.y = element_text(size = 20),
+  axis.text.y = element_text(size = 20))
+
+
+
+q <- ggplot(gala, aes(x = Area, y = Species)) + 
+   geom_point() +
+   stat_smooth(method = "lm", col = "red", show.legend=TRUE)+  stat_poly_eq(aes(label = paste0("atop(", ..eq.label.., ",", ..rr.label.., ")")), formula = formula1, parse = TRUE, size = 8) + scale_x_continuous(n.breaks = 8)
+q+My_Theme
+
+```
+
+# MODELO COMPLETO
+
+```{r, echo=TRUE}
+lm.2 <- lm (Species ~ Area + Elevation + Nearest + 
+              Scruz + Adjacent, data=gala)
+```
+
+
+```{r}
+pander::pander(summary(lm.2), caption = "Modelo de regresión múltiple del set de datos gala")
+```
+
+# MODELO REDUCIDO
+
+```{r, echo=TRUE}
+lm.3 <- lm (Species ~ Area + Elevation + 
+              Adjacent, data=gala)
+```
+
+
+```{r}
+pander::pander(summary(lm.3), caption = "Modelo reducido de regresión múltiple del set de datos gala")
+```
+
+
+# COMPARACIÓN DE MODELOS
+
+```{r}
+lm.1 <- lm (Species ~ Area, data=gala)
+```
+
+
+```{r, echo=TRUE}
+# análisis de residuales
+anova(lm.1, lm.3, lm.2) %>% kable()
+
+# Criterio AIC - penaliza el número de variables
+AIC(lm.1, lm.3, lm.2) %>% kable()
+```
+
+
+
+# PRÁCTICA ANÁLISIS DE DATOS
+- Guía de trabajo práctico disponible en drive y Rstudio.cloud.  
+**Clase_14**
+
+- El trabajo práctico se realiza en Rstudio.cloud.  
+**Guía 14 Regresión lineal múltiple**
+
+# RESUMEN DE LA CLASE
+
+- **Elaborar hipótesis para una regresión lineal múltiple**
+
+- **Realizar análisis de covarianza**
+
+- **Interpretar coeficientes**
+
+- **Comparar modelos**

@@ -7,7 +7,8 @@ Curso de introducción al análisis de datos con R para estudiantes de pregrado 
 [**JOSÉ ANDRÉS GALLARDO MATUS**](https://github.com/DrJoseGallardo)  
 Doctor en Ciencias por la Universidad de Chile, Chile.
 Biólogo Marino por la Universidad Católica de la Santísima Concepción, Chile.
-Profesor adjunto de la Pontificia Universidad Católica de Valparaíso, Chile.
+Profesor de genética y genómica aplicada en la Pontificia Universidad Católica de Valparaíso, Chile.
+https://genomics.pucv.cl/
 
 ## UNIDADES DE APRENDIZAJE
 
